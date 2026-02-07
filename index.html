@@ -1,0 +1,914 @@
+<!doctype html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Таблица умножения - тренажер</title>
+
+  <style>
+    :root{
+      --bg: #f4f6fb;
+      --card: #ffffff;
+      --text: #1b2430;
+      --muted: #5b6b80;
+
+      --brand: #1f4aa8;
+      --brand2: #163a86;
+      --brandSoft: rgba(31,74,168,.10);
+
+      --border: rgba(15, 23, 42, .12);
+      --shadow: 0 10px 26px rgba(15, 23, 42, .10);
+
+      --radius: 14px;
+
+      --good: #1c8c4a;
+      --bad: #c33b3b;
+    }
+
+    *{ box-sizing: border-box; }
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, "Segoe UI", Roboto, Arial, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      min-height: 100vh;
+      display:flex;
+      justify-content:center;
+      padding: 14px;
+    }
+
+    .app{ width: min(620px, 100%); }
+
+    /* Top school-like header */
+    .topbar{
+      background: linear-gradient(180deg, var(--brand), var(--brand2));
+      color: #fff;
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px 14px 12px 14px;
+      margin-bottom: 12px;
+      border: 1px solid rgba(255,255,255,.14);
+    }
+    .topbar-row{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap: 12px;
+    }
+    .brandblock{
+      display:flex;
+      align-items:center;
+      gap: 12px;
+      min-width: 0;
+    }
+
+    /* Bigger logo in header */
+    .logo-wrap{
+      width: 120px;
+      height: 68px;
+      border-radius: 14px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.22);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      overflow:hidden;
+      flex: 0 0 auto;
+      padding: 8px 10px;
+    }
+    .logo-img{
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      display:block;
+    }
+
+    .brandtext{ min-width: 0; }
+    .brandtitle{
+      margin:0;
+      font-size: 16px;
+      font-weight: 900;
+      line-height: 1.2;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    .brandsub{
+      margin: 3px 0 0 0;
+      font-size: 12px;
+      opacity: .92;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .pill{
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      background: rgba(255,255,255,.14);
+      border: 1px solid rgba(255,255,255,.22);
+      user-select:none;
+      white-space: nowrap;
+      flex: 0 0 auto;
+    }
+
+    .nav{
+      margin-top: 12px;
+      display:flex;
+      gap: 8px;
+      overflow:auto;
+      padding-bottom: 2px;
+    }
+    .nav a{
+      text-decoration:none;
+      color: #fff;
+      font-size: 12px;
+      padding: 7px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.10);
+      white-space: nowrap;
+      opacity: .95;
+      user-select:none;
+    }
+    .nav a.active{
+      background: rgba(255,255,255,.20);
+      border-color: rgba(255,255,255,.28);
+      font-weight: 800;
+    }
+
+    .card{
+      background: var(--card);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 14px;
+    }
+
+    .header{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .title{
+      margin:0;
+      font-size: 18px;
+      font-weight: 900;
+      letter-spacing: .2px;
+    }
+    .sub{
+      margin: 6px 0 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+    }
+
+    .divider{
+      height: 1px;
+      background: rgba(15, 23, 42, .10);
+      margin: 12px 0;
+    }
+
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+      margin-top: 10px;
+    }
+    .row{
+      display:flex;
+      gap: 10px;
+      flex-wrap: wrap;
+      margin-top: 10px;
+    }
+    .row .btn{ flex: 1; }
+
+    .btn{
+      appearance:none;
+      border: 1px solid rgba(31,74,168,.28);
+      background: #fff;
+      color: var(--text);
+      border-radius: 12px;
+      padding: 14px 12px;
+      text-align:center;
+      font-weight: 900;
+      font-size: 16px;
+      cursor:pointer;
+      user-select:none;
+      min-height: 54px;
+      box-shadow: 0 6px 16px rgba(31,74,168,.08);
+      transition: transform .04s ease, box-shadow .12s ease;
+    }
+    .btn:active{ transform: scale(.99); }
+    .btn:focus{
+      outline:none;
+      box-shadow: 0 0 0 4px rgba(31,74,168,.18), 0 6px 16px rgba(31,74,168,.08);
+    }
+    .btn.primary{
+      background: linear-gradient(180deg, var(--brand), var(--brand2));
+      color: #fff;
+      border-color: rgba(31,74,168,.45);
+      box-shadow: 0 10px 20px rgba(31,74,168,.18);
+    }
+    .btn.warn{
+      background: rgba(255, 193, 7, .16);
+      border-color: rgba(255, 193, 7, .40);
+      box-shadow: 0 8px 18px rgba(255, 193, 7, .12);
+    }
+    .btn.small{
+      min-height: 44px;
+      font-size: 14px;
+      padding: 10px 10px;
+      border-radius: 10px;
+    }
+
+    .question{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      border-radius: 14px;
+      border: 1px solid rgba(31,74,168,.18);
+      background: var(--brandSoft);
+      padding: 14px 12px;
+      margin-top: 8px;
+      font-size: 34px;
+      font-weight: 950;
+      letter-spacing: .3px;
+      min-height: 88px;
+    }
+
+    .answers .btn{
+      font-size: 20px;
+      min-height: 64px;
+    }
+
+    .btn.good{
+      border-color: rgba(28,140,74,.45);
+      background: rgba(28,140,74,.10);
+      box-shadow: 0 8px 18px rgba(28,140,74,.10);
+    }
+    .btn.bad{
+      border-color: rgba(195,59,59,.45);
+      background: rgba(195,59,59,.10);
+      box-shadow: 0 8px 18px rgba(195,59,59,.10);
+    }
+
+    .muted{
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.35;
+      margin: 10px 0 0 0;
+    }
+
+    .list{
+      margin: 0;
+      padding-left: 18px;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.55;
+    }
+
+    .pill-soft{
+      background: var(--brandSoft);
+      color: #0f2f7a;
+      border-color: rgba(31,74,168,.18);
+    }
+
+    .hidden{ display:none !important; }
+
+    @media (max-width: 420px){
+      .logo-wrap{ width: 96px; height: 58px; }
+      .question{ font-size: 30px; }
+      .answers .btn{ font-size: 18px; }
+    }
+
+    /* Teacher overlay */
+    .t-overlay{
+      position: fixed;
+      inset: 0;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 16px;
+      background: rgba(10, 15, 25, .22);
+      backdrop-filter: blur(2px);
+      z-index: 50;
+    }
+
+    .t-card{
+      width: min(720px, 100%);
+      display:flex;
+      gap: 14px;
+      align-items:center;
+      background: #fff;
+      border: 1px solid rgba(15,23,42,.14);
+      border-radius: 18px;
+      box-shadow: 0 18px 40px rgba(15,23,42,.22);
+      padding: 14px;
+      transform: translateY(18px) scale(.98);
+      opacity: 0;
+    }
+
+    .t-img{
+      width: 190px;
+      height: 190px;
+      border-radius: 18px;
+      object-fit: cover;
+      border: 1px solid rgba(15,23,42,.10);
+      flex: 0 0 auto;
+    }
+
+    .t-bubble{
+      flex:1;
+      background: rgba(31,74,168,.08);
+      border: 1px solid rgba(31,74,168,.16);
+      border-radius: 14px;
+      padding: 12px 14px;
+      position: relative;
+    }
+
+    .t-bubble:before{
+      content:"";
+      position:absolute;
+      left: -8px;
+      top: 28px;
+      width: 14px;
+      height: 14px;
+      background: rgba(31,74,168,.08);
+      border-left: 1px solid rgba(31,74,168,.16);
+      border-bottom: 1px solid rgba(31,74,168,.16);
+      transform: rotate(45deg);
+    }
+
+    .t-title{
+      font-weight: 950;
+      font-size: 13px;
+      color: rgba(31,74,168,.95);
+      margin-bottom: 6px;
+    }
+
+    .t-text{
+      font-weight: 950;
+      font-size: 22px;
+      color: #1b2430;
+      line-height: 1.2;
+    }
+
+    .t-card.good .t-bubble{
+      background: rgba(28,140,74,.10);
+      border-color: rgba(28,140,74,.18);
+    }
+    .t-card.good .t-title{ color: rgba(28,140,74,.95); }
+
+    .t-card.bad .t-bubble{
+      background: rgba(195,59,59,.10);
+      border-color: rgba(195,59,59,.18);
+    }
+    .t-card.bad .t-title{ color: rgba(195,59,59,.95); }
+
+    .t-show{
+      animation: tIn .18s ease-out forwards, tOut .22s ease-in forwards;
+      animation-delay: 0s, 1.05s;
+    }
+
+    @keyframes tIn{
+      from { opacity: 0; transform: translateY(18px) scale(.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes tOut{
+      from { opacity: 1; transform: translateY(0) scale(1); }
+      to   { opacity: 0; transform: translateY(10px) scale(.99); }
+    }
+
+    @media (max-width: 420px){
+      .t-img{ width: 140px; height: 140px; }
+      .t-text{ font-size: 20px; }
+    }
+
+    @media (prefers-reduced-motion: reduce){
+      .t-show{ animation: none; opacity: 1; transform: none; }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="topbar-row">
+        <div class="brandblock">
+          <div class="logo-wrap">
+            <img id="school-logo" class="logo-img" alt="Логотип" />
+          </div>
+          <div class="brandtext">
+            <p class="brandtitle">Мини-тренажер</p>
+            <p class="brandsub">Таблица умножения 1-10</p>
+          </div>
+        </div>
+        <div class="pill" id="pill-last">Готов</div>
+      </div>
+
+      <nav class="nav" aria-label="Навигация">
+        <a href="#" class="active" onclick="return false;">Главная</a>
+        <a href="#" onclick="return false;">Обучение</a>
+        <a href="#" onclick="return false;">Тренировка</a>
+        <a href="#" onclick="return false;">Результаты</a>
+      </nav>
+    </header>
+
+    <!-- SCREEN: MENU -->
+    <section id="screen-menu" class="card">
+      <div class="header">
+        <div>
+          <h1 class="title">Выбери режим</h1>
+          <p class="sub">В каждом режиме - 10 вопросов. После ответа сразу видно, правильно или нет.</p>
+        </div>
+        <div class="pill pill-soft" id="pill-best">Лучший: -</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div class="row">
+        <button class="btn primary" id="btn-mode-level">Тренировка по числу</button>
+        <button class="btn" id="btn-mode-mixed">Смешанный тест (10 вопросов)</button>
+      </div>
+
+      <div class="row">
+        <button class="btn warn" id="btn-mode-mistakes" disabled>Работа над ошибками</button>
+      </div>
+
+      <div id="level-picker" class="hidden">
+        <div class="divider"></div>
+        <p class="muted" style="margin-top:0">Какую цифру тренируем?</p>
+        <div class="grid" id="level-grid"></div>
+      </div>
+
+      <p class="muted">Совет: выбери число, которое сейчас учат в школе, и пройди 10 вопросов подряд.</p>
+    </section>
+
+    <!-- SCREEN: QUIZ -->
+    <section id="screen-quiz" class="card hidden">
+      <div class="header">
+        <div>
+          <h2 class="title" id="quiz-title">Тренировка</h2>
+          <p class="sub" id="quiz-sub">Выбери правильный ответ</p>
+        </div>
+        <div class="pill pill-soft" id="pill-progress">1/10</div>
+      </div>
+
+      <div class="question" id="question">3 x 7 = ?</div>
+
+      <div class="grid answers" id="answers"></div>
+
+      <p class="muted" id="feedback"> </p>
+
+      <div class="row">
+        <button class="btn small" id="btn-exit">В меню</button>
+        <button class="btn small" id="btn-restart">Заново</button>
+      </div>
+    </section>
+
+    <!-- SCREEN: RESULT -->
+    <section id="screen-result" class="card hidden">
+      <div class="header">
+        <div>
+          <h2 class="title">Результат</h2>
+          <p class="sub" id="result-sub"> </p>
+        </div>
+        <div class="pill pill-soft" id="pill-score">0/10</div>
+      </div>
+
+      <div class="divider"></div>
+
+      <div id="errors-block" class="hidden">
+        <p class="muted" style="margin-top:0">Ошибки:</p>
+        <ul class="list" id="errors-list"></ul>
+        <div class="divider"></div>
+      </div>
+
+      <div class="row">
+        <button class="btn warn" id="btn-practice-mistakes" disabled>Работа над ошибками</button>
+      </div>
+
+      <div class="row">
+        <button class="btn primary" id="btn-again">Сыграть еще раз</button>
+        <button class="btn" id="btn-back">В меню</button>
+      </div>
+
+      <p class="muted">Лучший результат сохраняется на этом устройстве.</p>
+    </section>
+  </div>
+
+  <!-- Teacher popup -->
+  <div id="teacher-overlay" class="t-overlay hidden" aria-live="polite">
+    <div id="teacher-card" class="t-card">
+      <img id="teacher-img" class="t-img" src="" alt="Учитель" />
+      <div class="t-bubble">
+        <div id="teacher-title" class="t-title">Учитель</div>
+        <div id="teacher-text" class="t-text">Молодец!</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ---------------- config ----------------
+    const LOGO_SRC = "assets/ort-log.png";     // png
+    const TEACHER_GOOD_IMG = "assets/teacher-1.jpg"; // jpg
+    const TEACHER_BAD_IMG  = "assets/teacher-2.jpg"; // jpg
+
+    const praisePhrases = [
+      "Молодец!",
+      "Отлично!",
+      "Супер! Так держать!",
+      "Правильно! Горжусь тобой!",
+      "Красавчик! Отличная работа!"
+    ];
+
+    const strictPhrases = [
+      "Неправильно. Нужно учиться лучше!",
+      "Ошибка. Сконцентрируйся и попробуй еще!",
+      "Пока не получилось. Давай учиться лучше!",
+      "Неверно. В следующий раз будет лучше!",
+      "Ошибка. Повтори таблицу и возвращайся!"
+    ];
+
+    // ---------------- helpers ----------------
+    const $ = (id) => document.getElementById(id);
+    const clamp = (n, a, b) => Math.max(a, Math.min(b, n));
+    const randInt = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+    const shuffle = (arr) => {
+      for (let i = arr.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [arr[i], arr[j]] = [arr[j], arr[i]];
+      }
+      return arr;
+    };
+
+    // ---------------- state ----------------
+    const TOTAL_Q = 10;
+    const STORAGE_KEY = "mul_trainer_v5";
+
+    const state = {
+      mode: "level",     // "level" | "mixed" | "mistakes"
+      level: 3,
+      idx: 0,
+      correctCount: 0,
+      questions: [],
+      locked: false,
+      best: { level: {}, mixed: 0 },
+      lastMistakes: []   // [{a,b,correct}]
+    };
+
+    function loadState() {
+      try{
+        const raw = localStorage.getItem(STORAGE_KEY);
+        if(!raw) return;
+        const data = JSON.parse(raw);
+        if(data?.best) state.best = data.best;
+        if(Array.isArray(data?.lastMistakes)) state.lastMistakes = data.lastMistakes;
+        if(typeof data?.lastMode === "string") state.mode = data.lastMode;
+        if(Number.isFinite(data?.lastLevel)) state.level = clamp(data.lastLevel, 1, 10);
+      } catch(e){}
+    }
+
+    function saveState() {
+      const data = {
+        best: state.best,
+        lastMistakes: state.lastMistakes,
+        lastMode: state.mode,
+        lastLevel: state.level
+      };
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(data)); } catch(e){}
+    }
+
+    function updateMistakesAvailability(){
+      const has = Array.isArray(state.lastMistakes) && state.lastMistakes.length > 0;
+      $("btn-mode-mistakes").disabled = !has;
+      $("btn-practice-mistakes").disabled = !has;
+      $("btn-mode-mistakes").textContent = has
+        ? `Работа над ошибками (${state.lastMistakes.length})`
+        : "Работа над ошибками";
+      $("btn-practice-mistakes").textContent = has
+        ? `Работа над ошибками (${state.lastMistakes.length})`
+        : "Работа над ошибками";
+    }
+
+    function updateTopPills(){
+      const last = state.mode === "mixed"
+        ? "Последний: микс"
+        : state.mode === "mistakes"
+          ? "Последний: ошибки"
+          : `Последний: ${state.level}`;
+      $("pill-last").textContent = last;
+
+      const best = state.mode === "mixed"
+        ? `Лучший: ${state.best.mixed}/${TOTAL_Q}`
+        : state.mode === "mistakes"
+          ? `Ошибок: ${state.lastMistakes.length}`
+          : `Лучший: ${Number(state.best.level?.[String(state.level)] || 0)}/${TOTAL_Q}`;
+      $("pill-best").textContent = best;
+    }
+
+    // ---------------- questions ----------------
+    function makeQuestionFromAB(a, b){
+      const correct = a * b;
+      const optionsSet = new Set([correct]);
+
+      const add = (val) => {
+        val = clamp(val, 0, 100);
+        if(val === correct) return false;
+        optionsSet.add(val);
+        return true;
+      };
+
+      let tries = 0;
+      while(optionsSet.size < 4 && tries < 80){
+        tries++;
+        const r = Math.random();
+        let candidate;
+
+        if(r < 0.70){
+          const delta = randInt(1, 10);
+          candidate = correct + (Math.random() < 0.5 ? -delta : delta);
+        } else if(r < 0.88){
+          const b2 = clamp(b + (Math.random() < 0.5 ? -1 : 1), 1, 10);
+          candidate = a * b2;
+        } else {
+          candidate = randInt(0, 100);
+        }
+        add(candidate);
+      }
+
+      const options = shuffle(Array.from(optionsSet)).slice(0,4);
+      return { a, b, correct, options, picked: null, isCorrect: null };
+    }
+
+    function makeQuestion(mode, level){
+      let a, b;
+      if(mode === "level"){
+        a = level;
+        b = randInt(1, 10);
+      } else {
+        a = randInt(1, 10);
+        b = randInt(1, 10);
+      }
+      return makeQuestionFromAB(a, b);
+    }
+
+    function startSession(mode, level){
+      state.mode = mode;
+      state.level = level ?? state.level;
+      state.idx = 0;
+      state.correctCount = 0;
+      state.locked = false;
+
+      if(mode === "mistakes"){
+        // берём ошибки, перемешиваем, и делаем до 10 вопросов (если ошибок меньше - будет меньше)
+        const base = shuffle(state.lastMistakes.map(x => ({a:x.a, b:x.b})));
+        const picked = base.slice(0, TOTAL_Q);
+        state.questions = picked.map(p => makeQuestionFromAB(p.a, p.b));
+      } else {
+        state.questions = Array.from({length: TOTAL_Q}, () => makeQuestion(mode, state.level));
+      }
+
+      saveState();
+      renderQuizScreen();
+      showScreen("quiz");
+      updateTopPills();
+    }
+
+    // ---------------- screens ----------------
+    function showScreen(name){
+      $("screen-menu").classList.add("hidden");
+      $("screen-quiz").classList.add("hidden");
+      $("screen-result").classList.add("hidden");
+
+      if(name === "menu") $("screen-menu").classList.remove("hidden");
+      if(name === "quiz") $("screen-quiz").classList.remove("hidden");
+      if(name === "result") $("screen-result").classList.remove("hidden");
+
+      updateMistakesAvailability();
+      updateTopPills();
+    }
+
+    function buildLevelButtons(){
+      const grid = $("level-grid");
+      grid.innerHTML = "";
+      for(let n=1; n<=10; n++){
+        const btn = document.createElement("button");
+        btn.className = "btn";
+        btn.textContent = `${n}`;
+        btn.addEventListener("click", () => startSession("level", n));
+        grid.appendChild(btn);
+      }
+    }
+
+    function renderQuizScreen(){
+      const q = state.questions[state.idx];
+
+      const total = state.questions.length || TOTAL_Q;
+      $("pill-progress").textContent = `${state.idx + 1}/${total}`;
+
+      const title = state.mode === "mixed"
+        ? "Смешанный тест"
+        : state.mode === "mistakes"
+          ? "Работа над ошибками"
+          : `Тренировка по числу ${state.level}`;
+      $("quiz-title").textContent = title;
+
+      $("quiz-sub").textContent = "Выбери правильный ответ";
+      $("question").textContent = `${q.a} x ${q.b} = ?`;
+      $("feedback").textContent = " ";
+
+      const answers = $("answers");
+      answers.innerHTML = "";
+
+      q.options.forEach((opt) => {
+        const b = document.createElement("button");
+        b.className = "btn";
+        b.textContent = `${opt}`;
+        b.disabled = false;
+        b.addEventListener("click", () => onPick(opt));
+        answers.appendChild(b);
+      });
+
+      state.locked = false;
+    }
+
+    function markButtons(correct, picked){
+      const buttons = Array.from($("answers").querySelectorAll("button"));
+      buttons.forEach(btn => {
+        const val = Number(btn.textContent);
+        if(val === correct) btn.classList.add("good");
+        if(val === picked && picked !== correct) btn.classList.add("bad");
+        btn.disabled = true;
+      });
+    }
+
+    // ---------------- teacher reaction ----------------
+    let teacherTimer = null;
+
+    function showTeacherReaction(isCorrect){
+      const overlay = $("teacher-overlay");
+      const card = $("teacher-card");
+      const img = $("teacher-img");
+      const title = $("teacher-title");
+      const text = $("teacher-text");
+
+      overlay.classList.remove("hidden");
+      card.classList.remove("t-show", "good", "bad");
+
+      if(isCorrect){
+        img.src = TEACHER_GOOD_IMG;
+        card.classList.add("good");
+        title.textContent = "Учитель";
+        text.textContent = praisePhrases[randInt(0, praisePhrases.length - 1)];
+        try{ if(navigator.vibrate) navigator.vibrate([20, 40, 20]); }catch(e){}
+      } else {
+        img.src = TEACHER_BAD_IMG;
+        card.classList.add("bad");
+        title.textContent = "Учитель";
+        text.textContent = strictPhrases[randInt(0, strictPhrases.length - 1)];
+        try{ if(navigator.vibrate) navigator.vibrate(60); }catch(e){}
+      }
+
+      void card.offsetWidth;
+      card.classList.add("t-show");
+
+      if(teacherTimer) clearTimeout(teacherTimer);
+      teacherTimer = setTimeout(() => {
+        overlay.classList.add("hidden");
+      }, 1300);
+    }
+
+    $("teacher-overlay").addEventListener("click", () => {
+      $("teacher-overlay").classList.add("hidden");
+    });
+
+    // ---------------- answer handler ----------------
+    function onPick(value){
+      if(state.locked) return;
+      state.locked = true;
+
+      const q = state.questions[state.idx];
+      q.picked = value;
+      q.isCorrect = (value === q.correct);
+      if(q.isCorrect) state.correctCount++;
+
+      $("feedback").textContent = q.isCorrect ? "Верно!" : `Неверно. Правильный ответ: ${q.correct}`;
+      markButtons(q.correct, value);
+
+      showTeacherReaction(q.isCorrect);
+
+      setTimeout(() => {
+        state.idx++;
+        if(state.idx >= state.questions.length){
+          finishSession();
+        } else {
+          renderQuizScreen();
+        }
+      }, 650);
+    }
+
+    function finishSession(){
+      // обновляем best только для level/mixed
+      if(state.mode === "mixed"){
+        state.best.mixed = Math.max(state.best.mixed || 0, state.correctCount);
+      } else if(state.mode === "level"){
+        const key = String(state.level);
+        const prev = Number(state.best.level?.[key] || 0);
+        state.best.level[key] = Math.max(prev, state.correctCount);
+      }
+
+      // сохраняем ошибки последней сессии (для режима "работа над ошибками")
+      const mistakes = state.questions
+        .filter(q => q.isCorrect === false)
+        .map(q => ({ a: q.a, b: q.b, correct: q.correct }));
+
+      // Убираем дубликаты
+      const uniq = new Map();
+      mistakes.forEach(m => uniq.set(`${m.a}x${m.b}`, m));
+      state.lastMistakes = Array.from(uniq.values());
+
+      saveState();
+
+      const total = state.questions.length || TOTAL_Q;
+      $("pill-score").textContent = `${state.correctCount}/${total}`;
+
+      const bestText =
+        state.mode === "mixed"
+          ? `Лучший результат в миксе: ${state.best.mixed}/${TOTAL_Q}`
+          : state.mode === "mistakes"
+            ? `Отлично. Теперь ошибки можно повторить еще раз, пока не будет 0`
+            : `Лучший результат для числа ${state.level}: ${state.best.level[String(state.level)]}/${TOTAL_Q}`;
+
+      $("result-sub").textContent = bestText;
+
+      const errorsBlock = $("errors-block");
+      const list = $("errors-list");
+      list.innerHTML = "";
+
+      if(state.lastMistakes.length === 0){
+        errorsBlock.classList.add("hidden");
+      } else {
+        errorsBlock.classList.remove("hidden");
+        state.lastMistakes.forEach((m, idx) => {
+          const li = document.createElement("li");
+          li.textContent = `${idx + 1}. ${m.a} x ${m.b} = ${m.correct}`;
+          list.appendChild(li);
+        });
+      }
+
+      updateMistakesAvailability();
+      showScreen("result");
+      updateTopPills();
+    }
+
+    // ---------------- events ----------------
+    $("btn-mode-level").addEventListener("click", () => {
+      $("level-picker").classList.toggle("hidden");
+    });
+
+    $("btn-mode-mixed").addEventListener("click", () => startSession("mixed", state.level));
+
+    $("btn-mode-mistakes").addEventListener("click", () => {
+      if($("btn-mode-mistakes").disabled) return;
+      startSession("mistakes", state.level);
+    });
+
+    $("btn-practice-mistakes").addEventListener("click", () => {
+      if($("btn-practice-mistakes").disabled) return;
+      startSession("mistakes", state.level);
+    });
+
+    $("btn-exit").addEventListener("click", () => showScreen("menu"));
+    $("btn-restart").addEventListener("click", () => startSession(state.mode, state.level));
+
+    $("btn-again").addEventListener("click", () => startSession(state.mode === "mistakes" ? "mistakes" : state.mode, state.level));
+    $("btn-back").addEventListener("click", () => showScreen("menu"));
+
+    // ---------------- init ----------------
+    function initLogo(){
+      const img = $("school-logo");
+      img.src = LOGO_SRC;
+      img.onerror = () => {
+        img.style.display = "none";
+        const wrap = img.parentElement;
+        wrap.textContent = "ORT";
+        wrap.style.fontWeight = "950";
+        wrap.style.letterSpacing = ".5px";
+      };
+    }
+
+    loadState();
+    initLogo();
+    buildLevelButtons();
+    updateMistakesAvailability();
+    showScreen("menu");
+    updateTopPills();
+  </script>
+</body>
+</html>
